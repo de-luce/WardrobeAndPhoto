@@ -8,7 +8,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "我的衣柜",
+    "navigationBarTitleText": "心愿衣柜",
     "navigationBarTextStyle": "black",
     "enablePullDownRefresh": false
   },
@@ -22,13 +22,13 @@
         "pagePath": "pages/wardrobe/wardrobe",
         "iconPath": "images/wardrobe.png",
         "selectedIconPath": "images/wardrobe-active.png",
-        "text": "衣柜"
+        "text": "心愿衣柜"
       },
       {
         "pagePath": "pages/photos/photos",
         "iconPath": "images/photo.png",
         "selectedIconPath": "images/photo-active.png",
-        "text": "照片柜"
+        "text": "照片墙"
       }
     ]
   },

@@ -8,27 +8,74 @@
     </view>
   </view>
 
-  <!-- 照片网格 -->
-  <view class="photos-grid">
-    <view 
-      class="photo-item" 
-      wx:for="{{photoList}}" 
-      wx:key="id"
-      bindtap="previewImage"
-      data-url="{{item.imageUrl}}"
-      data-index="{{index}}"
+  <!-- 拍立得照片墙 - 叠加滑动 -->
+  <view class="photos-wall-container">
+    <swiper 
+      class="photos-swiper"
+      indicator-dots="{{false}}"
+      circular="{{photoList.length > 1}}"
+      bindchange="onSwiperChange"
+      current="{{currentIndex}}"
+      duration="300"
     >
-      <image class="photo-image" src="{{item.imageUrl}}" mode="aspectFill" lazy-load></image>
-      <view class="photo-mask">
-        <view class="photo-actions">
-          <view class="action-btn detail-btn" catchtap="viewDetail" data-id="{{item.id}}">详情</view>
-          <view class="action-btn delete-btn" catchtap="deletePhoto" data-id="{{item.id}}">删除</view>
+      <swiper-item 
+        wx:for="{{photoList}}" 
+        wx:key="id"
+        class="swiper-item-wrapper"
+      >
+        <!-- 叠加的照片堆 -->
+        <view class="stack-container">
+          <!-- 后面的照片（显示在底部作为预览） -->
+          <view 
+            wx:for="{{photoList}}" 
+            wx:for-item="stackItem"
+            wx:for-index="stackIndex"
+            wx:key="stackItem.id"
+            wx:if="{{stackIndex > index && stackIndex <= index + 2}}"
+            class="polaroid-item stack-item behind" 
+            style="z-index: {{stackIndex - index}}; transform: translate(-50%, -50%) rotate({{stackItem.rotate || 0}}deg) translate({{(stackIndex - index) * 12}}rpx, {{(stackIndex - index) * 12}}rpx) scale({{1 - (stackIndex - index) * 0.08}}); opacity: {{0.6 - (stackIndex - index) * 0.2}};"
+          >
+            <view class="polaroid-photo">
+              <image class="polaroid-image" src="{{stackItem.imageUrl}}" mode="aspectFill" lazy-load="{{false}}"></image>
+            </view>
+            <view class="polaroid-label">
+              <text class="label-text" wx:if="{{stackItem.description}}">{{stackItem.description}}</text>
+              <text class="label-date" wx:if="{{!stackItem.description}}">{{stackItem.displayDate || ''}}</text>
+            </view>
+          </view>
+          
+          <!-- 当前照片 -->
+          <view 
+            class="polaroid-item stack-item current" 
+            style="z-index: 10; transform: translate(-50%, -50%) rotate({{item.rotate || 0}}deg);"
+          >
+            <!-- 拍立得照片主体 -->
+            <view class="polaroid-photo" bindtap="previewImage" data-url="{{item.imageUrl}}" data-index="{{index}}">
+              <image class="polaroid-image" src="{{item.imageUrl}}" mode="aspectFill" lazy-load="{{false}}"></image>
+            </view>
+            <!-- 底部标签区域 -->
+            <view class="polaroid-label">
+              <text class="label-text" wx:if="{{item.description}}">{{item.description}}</text>
+              <text class="label-date" wx:if="{{!item.description}}">{{item.displayDate || ''}}</text>
+            </view>
+            <!-- 操作按钮 -->
+            <view class="polaroid-actions">
+              <view class="action-icon delete-icon" catchtap="deletePhoto" data-id="{{item.id}}">🗑️</view>
+            </view>
+          </view>
         </view>
-      </view>
-    </view>
+      </swiper-item>
+    </swiper>
+    
+    <!-- 空状态 -->
     <view wx:if="{{photoList.length === 0}}" class="empty-state">
       <text class="empty-icon">📷</text>
-      <text class="empty-text">照片柜还是空的，快来添加第一张照片吧~</text>
+      <text class="empty-text">照片墙还是空的，快来添加第一张照片吧~</text>
+    </view>
+    
+    <!-- 照片指示器 -->
+    <view wx:if="{{photoList.length > 1}}" class="photo-indicator">
+      <text class="indicator-text">{{currentIndex + 1}} / {{photoList.length}}</text>
     </view>
   </view>
 </view>

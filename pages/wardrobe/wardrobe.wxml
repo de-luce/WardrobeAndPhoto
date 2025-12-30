@@ -4,7 +4,7 @@
   <view class="header" style="position: relative; z-index: 1;">
     <view class="add-btn" bindtap="showAddModal">
       <text class="add-icon">+</text>
-      <text>添加衣服</text>
+      <text>添加心愿</text>
     </view>
   </view>
 
@@ -14,20 +14,36 @@
       class="wardrobe-item" 
       wx:for="{{wardrobeList}}" 
       wx:key="id"
-      bindtap="viewDetail"
-      data-id="{{item.id}}"
     >
-      <image class="item-image" src="{{item.imageUrl}}" mode="aspectFill" lazy-load></image>
-      <view class="item-mask">
-        <view class="item-title">{{item.title}}</view>
-        <view class="item-actions">
-          <view class="action-btn delete-btn" catchtap="deleteItem" data-id="{{item.id}}">删除</view>
+      <!-- 图片区域 -->
+      <view class="item-image-wrapper" bindtap="viewDetail" data-id="{{item.id}}">
+        <image 
+          class="item-image" 
+          src="{{item.imageUrl}}" 
+          mode="aspectFill" 
+          lazy-load="{{false}}"
+          binderror="onImageError"
+          bindload="onImageLoad"
+          data-id="{{item.id}}"
+        ></image>
+        <!-- 遮罩层 - 用于操作按钮 -->
+        <view class="item-mask">
+          <view class="item-actions">
+            <view class="action-btn delete-btn" catchtap="deleteItem" data-id="{{item.id}}">删除</view>
+          </view>
+        </view>
+      </view>
+      <!-- 信息区域 - 在图片下方 -->
+      <view class="item-info" bindtap="viewDetail" data-id="{{item.id}}">
+        <view class="item-name-row">
+          <text class="item-name">{{item.title}}</text>
+          <text class="item-date">{{item.displayDate || ''}}</text>
         </view>
       </view>
     </view>
     <view wx:if="{{wardrobeList.length === 0}}" class="empty-state">
       <text class="empty-icon">👗</text>
-      <text class="empty-text">衣柜还是空的，快来添加第一件衣服吧~</text>
+      <text class="empty-text">心愿衣柜还是空的，快来添加第一件衣服吧~</text>
     </view>
   </view>
 
@@ -35,7 +51,7 @@
   <view class="modal {{showAddModal ? 'show' : ''}}" catchtap="hideAddModal">
     <view class="modal-content">
       <view class="modal-header">
-        <text class="modal-title">添加衣服</text>
+        <text class="modal-title">添加心愿</text>
         <text class="modal-close" bindtap="hideAddModal">×</text>
       </view>
       <view class="modal-body">

@@ -1,6 +1,6 @@
 // pages/wardrobe/wardrobe.ts
 const util = require('../../utils/util')
-const { saveToStorage, getFromStorage, generateId, formatTime } = util
+const { saveToStorage, getFromStorage, generateId, formatTime, formatDate } = util
 
 interface WardrobeItem {
   id: string
@@ -8,6 +8,7 @@ interface WardrobeItem {
   createTime: string
   title: string
   tags: string[]
+  displayDate?: string  // 格式化后的日期
 }
 
 Page({
@@ -29,8 +30,50 @@ Page({
   // 加载衣柜列表
   loadWardrobeList() {
     const list = getFromStorage<WardrobeItem[]>('wardrobeList', [])
+    console.log('加载衣柜列表，数量:', list.length)
+    
+    let hasFixed = false
+    
+    // 为每个物品添加格式化后的日期，并修复错误的路径格式
+    const listWithDate = list.map((item, index) => {
+      let fixedImageUrl = item.imageUrl
+      
+      // 修复路径：将错误的 /tmp/ 格式转换为 http://tmp/ 格式
+      if (fixedImageUrl && fixedImageUrl.startsWith('/tmp/')) {
+        fixedImageUrl = fixedImageUrl.replace('/tmp/', 'http://tmp/')
+        console.log(`物品 ${index}: 修复路径`, item.imageUrl, '->', fixedImageUrl)
+        hasFixed = true
+      }
+      
+      console.log(`物品 ${index}:`, item.title, '图片路径:', fixedImageUrl)
+      
+      return {
+        id: item.id,
+        imageUrl: fixedImageUrl,
+        createTime: item.createTime,
+        title: item.title,
+        tags: item.tags || [],
+        displayDate: formatDate(item.createTime)
+      }
+    })
+    
+    // 如果有路径被修复，更新存储
+    if (hasFixed) {
+      const fixedList = listWithDate.map((item) => {
+        return {
+          id: item.id,
+          imageUrl: item.imageUrl,
+          createTime: item.createTime,
+          title: item.title,
+          tags: item.tags || []
+        }
+      })
+      saveToStorage('wardrobeList', fixedList)
+      console.log('已修复图片路径并更新存储')
+    }
+    
     this.setData({
-      wardrobeList: list
+      wardrobeList: listWithDate
     })
   },
 
@@ -53,86 +96,67 @@ Page({
     const source = e.currentTarget.dataset.source || 'album'
     wx.chooseImage({
       count: 1,
-      sizeType: ['original'],
+      sizeType: ['original', 'compressed'],
       sourceType: [source],
-      success: async (res) => {
+      success: (res) => {
         const tempFilePath = res.tempFilePaths[0]
+        console.log('选择的图片路径（原始）:', tempFilePath)
         this.setData({ isUploading: true })
-        wx.showLoading({ title: '处理中...' })
+        wx.showLoading({ title: '保存中...', mask: true })
 
-        try {
-          // 处理图片（抠图）
-          const processedImage = await this.processImage(tempFilePath)
+        // wx.chooseImage 返回的路径格式是 http://tmp/xxx（网络临时路径）
+        // 直接使用原始路径，不做任何转换（与照片墙完全一致）
+        const imageUrl = tempFilePath
+        console.log('保存的图片路径:', imageUrl)
 
-          const newItem: WardrobeItem = {
-            id: generateId(),
-            imageUrl: processedImage,
-            createTime: formatTime(new Date()),
-            title: '新衣服',
-            tags: []
-          }
-
-          const list = getFromStorage<WardrobeItem[]>('wardrobeList', [])
-          list.unshift(newItem)
-          saveToStorage('wardrobeList', list)
-
-          this.loadWardrobeList()
-          this.hideAddModal()
-          wx.showToast({
-            title: '添加成功',
-            icon: 'success'
-          })
-        } catch (error) {
-          wx.showToast({
-            title: '处理失败',
-            icon: 'none'
-          })
-          console.error('处理失败', error)
-        } finally {
-          this.setData({ isUploading: false })
-          wx.hideLoading()
+        // 直接使用临时路径，与照片墙保持一致
+        const newItem: WardrobeItem = {
+          id: generateId(),
+          imageUrl: imageUrl,
+          createTime: formatTime(new Date()),
+          title: '新衣服',
+          tags: []
         }
+
+        const list = getFromStorage<WardrobeItem[]>('wardrobeList', [])
+        list.unshift(newItem)
+        saveToStorage('wardrobeList', list)
+
+        this.loadWardrobeList()
+        this.hideAddModal()
+        
+        wx.hideLoading()
+        wx.showToast({
+          title: '添加成功',
+          icon: 'success'
+        })
+        
+        this.setData({ isUploading: false })
+      },
+      fail: (err) => {
+        // 用户取消或选择失败时也要确保隐藏 loading
+        console.log('选择图片失败或取消', err)
+        wx.hideLoading()
+        this.setData({ isUploading: false })
       }
     })
   },
 
-  // 处理图片（抠图功能）
-  // 注意：实际项目中需要使用后端API或小程序云函数来实现抠图功能
-  processImage(tempFilePath: string): Promise<string> {
-    return new Promise((resolve) => {
-      // 这里可以调用图片处理API
-      // 暂时直接返回原图路径
-      // 实际应该调用抠图服务，比如：
-      // 1. 使用小程序云函数调用AI抠图API
-      // 2. 使用第三方服务如Remove.bg等
-      
-      // 示例：尝试保存图片到本地文件系统（如果支持）
-      // 注意：临时文件可能会被系统清理，建议使用云存储或服务器存储
-      try {
-        const fileManager = wx.getFileSystemManager()
-        // 使用临时目录
-        const savedFilePath = `${wx.env.USER_DATA_PATH || ''}/${Date.now()}.jpg`
-        
-        if (wx.env && wx.env.USER_DATA_PATH) {
-          fileManager.copyFile({
-            srcPath: tempFilePath,
-            destPath: savedFilePath,
-            success: () => {
-              resolve(savedFilePath)
-            },
-            fail: () => {
-              // 如果保存失败，使用临时路径
-              resolve(tempFilePath)
-            }
-          })
-        } else {
-          // 不支持USER_DATA_PATH时，直接使用临时路径
-          resolve(tempFilePath)
-        }
-      } catch (e) {
-        // 出错时使用临时路径
-        resolve(tempFilePath)
-      }
+  // 图片加载成功
+  onImageLoad(e: any) {
+    const { id } = e.currentTarget.dataset
+    console.log('图片加载成功', id)
+  },
+
+  // 图片加载错误处理
+  onImageError(e: any) {
+    const { id } = e.currentTarget.dataset
+    const { wardrobeList } = this.data
+    const item = wardrobeList.find((item: any) => item.id === id)
+    console.error('图片加载失败', {
+      id,
+      imageUrl: item?.imageUrl,
+      error: e.detail.errMsg || e.detail
     })
   },
 

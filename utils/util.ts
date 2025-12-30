@@ -16,6 +16,38 @@ const formatNumber = (n: number): string => {
   return str[1] ? str : `0${str}`
 }
 
+// 格式化日期为 yyyy-mm-dd
+const formatDate = (dateString: string): string => {
+  try {
+    // 尝试解析不同格式的日期字符串
+    let date: Date
+    if (dateString.includes('/')) {
+      // 格式: yyyy/mm/dd hh:mm:ss
+      const parts = dateString.split(' ')
+      const datePart = parts[0].split('/')
+      date = new Date(
+        parseInt(datePart[0]),
+        parseInt(datePart[1]) - 1,
+        parseInt(datePart[2])
+      )
+    } else {
+      date = new Date(dateString)
+    }
+    
+    if (isNaN(date.getTime())) {
+      return dateString // 如果解析失败，返回原字符串
+    }
+    
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    
+    return `${year}-${formatNumber(month)}-${formatNumber(day)}`
+  } catch (e) {
+    return dateString // 解析失败返回原字符串
+  }
+}
+
 // 保存数据到本地存储
 const saveToStorage = (key: string, data: any): boolean => {
   try {
@@ -73,6 +105,7 @@ const downloadImage = (url: string): Promise<string> => {
 
 module.exports = {
   formatTime,
+  formatDate,
   saveToStorage,
   getFromStorage,
   generateId,
