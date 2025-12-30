@@ -50,8 +50,8 @@
         "disableSWC": true
     },
     "compileType": "miniprogram",
-    "libVersion": "2.19.4",
-    "appid": "wx800d187aa3fbbe70",
+    "libVersion": "3.12.1",
+    "appid": "touristappid",
     "projectname": "衣柜",
     "condition": {},
     "simulatorPluginLibVersion": {},
