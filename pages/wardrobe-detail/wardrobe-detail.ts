@@ -8,6 +8,7 @@ interface WardrobeItem {
   createTime: string
   title: string
   tags: string[]
+  completed?: boolean
 }
 
 Page({

@@ -11,10 +11,15 @@
   <!-- 衣柜网格 -->
   <view class="wardrobe-grid" style="position: relative; z-index: 1;">
     <view 
-      class="wardrobe-item" 
+      class="wardrobe-item {{item.completed ? 'completed' : ''}}" 
       wx:for="{{wardrobeList}}" 
       wx:key="id"
     >
+      <!-- 完成标记 -->
+      <view class="complete-badge" wx:if="{{item.completed}}">
+        <text class="complete-icon">✓</text>
+      </view>
+      
       <!-- 图片区域 -->
       <view class="item-image-wrapper" bindtap="viewDetail" data-id="{{item.id}}">
         <image 
@@ -37,7 +42,14 @@
       <view class="item-info" bindtap="viewDetail" data-id="{{item.id}}">
         <view class="item-name-row">
           <text class="item-name">{{item.title}}</text>
-          <text class="item-date">{{item.displayDate || ''}}</text>
+          <view class="item-right-info">
+            <text class="item-date">{{item.displayDate || ''}}</text>
+            <view class="complete-checkbox" catchtap="toggleComplete" data-id="{{item.id}}">
+              <view class="checkbox-inner {{item.completed ? 'checked' : ''}}">
+                <text class="checkbox-icon" wx:if="{{item.completed}}">✓</text>
+              </view>
+            </view>
+          </view>
         </view>
       </view>
     </view>

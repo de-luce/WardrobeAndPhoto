@@ -9,6 +9,7 @@ interface WardrobeItem {
   title: string
   tags: string[]
   displayDate?: string  // 格式化后的日期
+  completed?: boolean  // 是否已完成
 }
 
 Page({
@@ -53,6 +54,7 @@ Page({
         createTime: item.createTime,
         title: item.title,
         tags: item.tags || [],
+        completed: item.completed || false,
         displayDate: formatDate(item.createTime)
       }
     })
@@ -65,7 +67,8 @@ Page({
           imageUrl: item.imageUrl,
           createTime: item.createTime,
           title: item.title,
-          tags: item.tags || []
+          tags: item.tags || [],
+          completed: item.completed || false
         }
       })
       saveToStorage('wardrobeList', fixedList)
@@ -115,7 +118,8 @@ Page({
           imageUrl: imageUrl,
           createTime: formatTime(new Date()),
           title: '新衣服',
-          tags: []
+          tags: [],
+          completed: false
         }
 
         const list = getFromStorage<WardrobeItem[]>('wardrobeList', [])
@@ -155,7 +159,7 @@ Page({
     const item = wardrobeList.find((item: any) => item.id === id)
     console.error('图片加载失败', {
       id,
-      imageUrl: item?.imageUrl,
+      imageUrl: item ? item.imageUrl : undefined,
       error: e.detail.errMsg || e.detail
     })
   },
@@ -187,6 +191,25 @@ Page({
         }
       }
     })
+  },
+
+  // 切换完成状态
+  toggleComplete(e: any) {
+    const { id } = e.currentTarget.dataset
+    const list = getFromStorage<WardrobeItem[]>('wardrobeList', [])
+    const index = list.findIndex(item => item.id === id)
+    
+    if (index !== -1) {
+      list[index].completed = !list[index].completed
+      saveToStorage('wardrobeList', list)
+      this.loadWardrobeList()
+      
+      wx.showToast({
+        title: list[index].completed ? '已标记为完成' : '已取消完成',
+        icon: 'success',
+        duration: 1500
+      })
+    }
   }
 })
 

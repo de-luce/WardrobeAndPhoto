@@ -39,7 +39,9 @@
         "minifyWXSS": true,
         "showES6CompileOption": false,
         "minifyWXML": true,
-        "useCompilerPlugins": ["typescript"],
+        "useCompilerPlugins": [
+            "typescript"
+        ],
         "compileWorklet": false,
         "localPlugins": false,
         "disableUseStrict": false,
@@ -49,7 +51,7 @@
     },
     "compileType": "miniprogram",
     "libVersion": "2.19.4",
-    "appid": "wx17fe8d1f8832209e",
+    "appid": "wx2112ca2b212be348",
     "projectname": "衣柜",
     "condition": {},
     "simulatorPluginLibVersion": {},
