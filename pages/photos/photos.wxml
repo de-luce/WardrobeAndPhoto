@@ -1,0 +1,35 @@
+<!--pages/photos/photos.wxml-->
+<view class="photos-container">
+  <!-- 顶部添加按钮 -->
+  <view class="header">
+    <view class="add-btn" bindtap="choosePhotos">
+      <text class="add-icon">+</text>
+      <text>添加照片</text>
+    </view>
+  </view>
+
+  <!-- 照片网格 -->
+  <view class="photos-grid">
+    <view 
+      class="photo-item" 
+      wx:for="{{photoList}}" 
+      wx:key="id"
+      bindtap="previewImage"
+      data-url="{{item.imageUrl}}"
+      data-index="{{index}}"
+    >
+      <image class="photo-image" src="{{item.imageUrl}}" mode="aspectFill" lazy-load></image>
+      <view class="photo-mask">
+        <view class="photo-actions">
+          <view class="action-btn detail-btn" catchtap="viewDetail" data-id="{{item.id}}">详情</view>
+          <view class="action-btn delete-btn" catchtap="deletePhoto" data-id="{{item.id}}">删除</view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{photoList.length === 0}}" class="empty-state">
+      <text class="empty-icon">📷</text>
+      <text class="empty-text">照片柜还是空的，快来添加第一张照片吧~</text>
+    </view>
+  </view>
+</view>
+

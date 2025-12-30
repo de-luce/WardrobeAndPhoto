@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TabBar 图标生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 40px;
+      background: #f5f5f5;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .icon-config {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .icon-item {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #eee;
+    }
+    .icon-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .icon-preview {
+      width: 81px;
+      height: 81px;
+      background: #f9f9f9;
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      flex-shrink: 0;
+    }
+    .icon-info {
+      flex: 1;
+    }
+    .icon-name {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .emoji-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 24px;
+      text-align: center;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #5568d3;
+    }
+    button.secondary {
+      background: #764ba2;
+    }
+    button.secondary:hover {
+      background: #5a3a7a;
+    }
+    .help-text {
+      background: #e3f2fd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+      color: #1565c0;
+      line-height: 1.6;
+    }
+    .help-text strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #0d47a1;
+    }
+  </style>
+</head>
+<body>
+  <h1>🖼️ TabBar 图标生成器</h1>
+  
+  <div class="icon-config">
+    <div class="icon-item">
+      <div class="icon-preview" id="preview-wardrobe">👗</div>
+      <div class="icon-info">
+        <div class="icon-name">衣柜图标</div>
+        <div class="emoji-input">
+          <input type="text" id="emoji-wardrobe" value="👗" maxlength="2" placeholder="输入emoji">
+          <input type="text" id="emoji-wardrobe-active" value="👗" maxlength="2" placeholder="选中状态emoji">
+        </div>
+        <div class="button-group">
+          <button onclick="generateIcon('wardrobe', false)">生成未选中图标</button>
+          <button onclick="generateIcon('wardrobe', true)" class="secondary">生成选中图标</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="icon-item">
+      <div class="icon-preview" id="preview-photo">📷</div>
+      <div class="icon-info">
+        <div class="icon-name">照片柜图标</div>
+        <div class="emoji-input">
+          <input type="text" id="emoji-photo" value="📷" maxlength="2" placeholder="输入emoji">
+          <input type="text" id="emoji-photo-active" value="📷" maxlength="2" placeholder="选中状态emoji">
+        </div>
+        <div class="button-group">
+          <button onclick="generateIcon('photo', false)">生成未选中图标</button>
+          <button onclick="generateIcon('photo', true)" class="secondary">生成选中图标</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="icon-item">
+      <div class="icon-preview" id="preview-wishlist">⭐</div>
+      <div class="icon-info">
+        <div class="icon-name">心愿单图标</div>
+        <div class="emoji-input">
+          <input type="text" id="emoji-wishlist" value="⭐" maxlength="2" placeholder="输入emoji">
+          <input type="text" id="emoji-wishlist-active" value="⭐" maxlength="2" placeholder="选中状态emoji">
+        </div>
+        <div class="button-group">
+          <button onclick="generateIcon('wishlist', false)">生成未选中图标</button>
+          <button onclick="generateIcon('wishlist', true)" class="secondary">生成选中图标</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="help-text">
+    <strong>📖 使用说明：</strong>
+    1. 修改 emoji 表情符号（可以使用 Mac 的 emoji 选择器：Control + Command + 空格）<br>
+    2. 点击"生成"按钮下载对应的图标文件<br>
+    3. 将下载的图片文件放到小程序的 <code>images/</code> 目录下<br>
+    4. 确保文件名与 app.json 中的配置一致
+  </div>
+
+  <script>
+    // 更新预览
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+      input.addEventListener('input', function() {
+        const id = this.id.replace('emoji-', '')
+        const isActive = id.includes('-active')
+        const baseId = id.replace('-active', '')
+        const previewId = 'preview-' + baseId
+        
+        if (!isActive) {
+          document.getElementById(previewId).textContent = this.value || '👗'
+        }
+      })
+    })
+
+    function generateIcon(type, isActive) {
+      const emojiInputId = isActive ? `emoji-${type}-active` : `emoji-${type}`
+      const emoji = document.getElementById(emojiInputId).value || '👗'
+      
+      // 创建 canvas
+      const canvas = document.createElement('canvas')
+      canvas.width = 162  // 81px @ 2x for retina
+      canvas.height = 162
+      const ctx = canvas.getContext('2d')
+      
+      // 设置背景（未选中为浅灰，选中为彩色）
+      if (isActive) {
+        ctx.fillStyle = '#3cc51f'  // 选中状态背景色
+      } else {
+        ctx.fillStyle = '#f5f5f5'  // 未选中状态背景色
+      }
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      
+      // 绘制 emoji
+      ctx.font = '120px Arial'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(emoji, canvas.width / 2, canvas.height / 2)
+      
+      // 转换为图片并下载
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        const fileName = isActive ? `${type}-active.png` : `${type}.png`
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+      }, 'image/png')
+    }
+
+    // 初始化预览
+    document.getElementById('preview-wardrobe').textContent = document.getElementById('emoji-wardrobe').value
+    document.getElementById('preview-photo').textContent = document.getElementById('emoji-photo').value
+    document.getElementById('preview-wishlist').textContent = document.getElementById('emoji-wishlist').value
+  </script>
+</body>
+</html>
+

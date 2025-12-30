@@ -1,0 +1,7 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <view class="loading-container">
+    <text class="loading-text">正在跳转...</text>
+  </view>
+</view>
+

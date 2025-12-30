@@ -1,0 +1,65 @@
+<!--pages/wardrobe/wardrobe.wxml-->
+<view class="wardrobe-container">
+  <!-- 顶部添加按钮 -->
+  <view class="header" style="position: relative; z-index: 1;">
+    <view class="add-btn" bindtap="showAddModal">
+      <text class="add-icon">+</text>
+      <text>添加衣服</text>
+    </view>
+  </view>
+
+  <!-- 衣柜网格 -->
+  <view class="wardrobe-grid" style="position: relative; z-index: 1;">
+    <view 
+      class="wardrobe-item" 
+      wx:for="{{wardrobeList}}" 
+      wx:key="id"
+      bindtap="viewDetail"
+      data-id="{{item.id}}"
+    >
+      <image class="item-image" src="{{item.imageUrl}}" mode="aspectFill" lazy-load></image>
+      <view class="item-mask">
+        <view class="item-title">{{item.title}}</view>
+        <view class="item-actions">
+          <view class="action-btn delete-btn" catchtap="deleteItem" data-id="{{item.id}}">删除</view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{wardrobeList.length === 0}}" class="empty-state">
+      <text class="empty-icon">👗</text>
+      <text class="empty-text">衣柜还是空的，快来添加第一件衣服吧~</text>
+    </view>
+  </view>
+
+  <!-- 添加模态框 -->
+  <view class="modal {{showAddModal ? 'show' : ''}}" catchtap="hideAddModal">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">添加衣服</text>
+        <text class="modal-close" bindtap="hideAddModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="upload-options">
+          <view class="upload-option" bindtap="chooseImage" data-source="album">
+            <view class="upload-icon-wrapper">
+              <text class="upload-icon">📷</text>
+            </view>
+            <text class="upload-label">从相册选择</text>
+            <text class="upload-desc">选择已保存的照片</text>
+          </view>
+          <view class="upload-option" bindtap="chooseImage" data-source="camera">
+            <view class="upload-icon-wrapper">
+              <text class="upload-icon">📸</text>
+            </view>
+            <text class="upload-label">拍照</text>
+            <text class="upload-desc">拍摄新的照片</text>
+          </view>
+        </view>
+        <view class="tip">
+          <text>💡 提示：上传图片后会自动抠出衣服主体</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
