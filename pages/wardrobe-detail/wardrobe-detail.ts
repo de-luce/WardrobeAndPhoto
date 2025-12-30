@@ -58,7 +58,7 @@ Page({
   },
 
   // 显示编辑模态框
-  showEditModal(e?: any) {
+  onShowEditModal(e?: any) {
     this.setData({
       showEditModal: true
     })
@@ -69,6 +69,11 @@ Page({
     this.setData({
       showEditModal: false
     })
+  },
+
+  // 阻止事件冒泡
+  stopPropagation(e?: any) {
+    // 阻止事件冒泡，防止点击内容区域关闭模态框
   },
 
   // 输入标题

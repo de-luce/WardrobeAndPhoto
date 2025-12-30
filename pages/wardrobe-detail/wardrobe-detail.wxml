@@ -30,13 +30,13 @@
 
   <!-- 操作按钮 -->
   <view class="action-section">
-    <button class="action-btn edit-btn" bindtap="showEditModal">编辑</button>
+    <button class="action-btn edit-btn" bindtap="onShowEditModal">编辑</button>
     <button class="action-btn delete-btn" bindtap="deleteItem">删除</button>
   </view>
 
   <!-- 编辑模态框 -->
   <view class="modal {{showEditModal ? 'show' : ''}}" catchtap="hideEditModal">
-    <view class="modal-content">
+    <view class="modal-content" catchtap="stopPropagation">
       <view class="modal-header">
         <text class="modal-title">编辑信息</text>
         <text class="modal-close" bindtap="hideEditModal">×</text>
