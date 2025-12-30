@@ -31,11 +31,9 @@
           bindload="onImageLoad"
           data-id="{{item.id}}"
         ></image>
-        <!-- 遮罩层 - 用于操作按钮 -->
-        <view class="item-mask">
-          <view class="item-actions">
-            <view class="action-btn delete-btn" catchtap="deleteItem" data-id="{{item.id}}">删除</view>
-          </view>
+        <!-- 删除按钮 -->
+        <view class="item-actions">
+          <view class="action-icon delete-icon" catchtap="deleteItem" data-id="{{item.id}}">🗑️</view>
         </view>
       </view>
       <!-- 信息区域 - 在图片下方 -->

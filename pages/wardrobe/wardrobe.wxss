@@ -240,7 +240,7 @@
 .complete-badge {
   position: absolute;
   top: 12rpx;
-  right: 12rpx;
+  left: 12rpx;
   width: 56rpx;
   height: 56rpx;
   background: #4cd964;
@@ -302,70 +302,44 @@
   line-height: 1;
 }
 
-.item-mask {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to top, 
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.4) 60%,
-    transparent 100%);
-  padding: 24rpx;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  opacity: 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(6rpx);
-  z-index: 10;
-  pointer-events: none;
-}
-
-.item-image-wrapper:active .item-mask {
-  opacity: 1;
-  pointer-events: auto;
-}
-
+/* 操作按钮区域 */
 .item-actions {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
   display: flex;
-  gap: 10rpx;
+  gap: 8rpx;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
 }
 
-.action-btn {
-  padding: 12rpx 24rpx;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(12rpx) saturate(1.5);
-  border-radius: 12rpx;
-  color: #fff;
-  font-size: 24rpx;
-  font-weight: 600;
-  box-shadow: 
-    0 4rpx 12rpx rgba(0, 0, 0, 0.3),
-    0 2rpx 6rpx rgba(0, 0, 0, 0.2),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1rpx 2rpx rgba(0, 0, 0, 0.1);
-  border: 1rpx solid rgba(255, 255, 255, 0.4);
-  transition: all 0.3s ease;
-  text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.3);
+.wardrobe-item:active .item-actions {
+  opacity: 1;
 }
 
-.action-btn:active {
-  transform: scale(0.95) translateY(1rpx);
+.action-icon {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10rpx);
+  border-radius: 50%;
+  font-size: 36rpx;
   box-shadow: 
-    0 2rpx 6rpx rgba(0, 0, 0, 0.25),
-    inset 0 1rpx 0 rgba(0, 0, 0, 0.1);
+    0 4rpx 8rpx rgba(0, 0, 0, 0.15),
+    0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
 
-.delete-btn {
-  background: linear-gradient(135deg, rgba(255, 59, 48, 0.95), rgba(255, 80, 70, 0.9));
-  box-shadow: 
-    0 4rpx 12rpx rgba(255, 59, 48, 0.5),
-    0 2rpx 6rpx rgba(255, 59, 48, 0.4),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.3),
-    inset 0 -1rpx 2rpx rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 59, 48, 0.6);
+.action-icon:active {
+  transform: scale(0.9);
+}
+
+.delete-icon {
+  background: rgba(255, 59, 48, 0.95);
 }
 
 .empty-state {
